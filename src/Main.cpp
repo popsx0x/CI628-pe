@@ -1,6 +1,12 @@
 #include "SDL_net.h"
-
+#include "SDL_ttf.h"
 #include "MyGame.h"
+
+#include <SDL.h>
+#include <SDL_mixer.h>
+
+//#include <iostream>
+//#include "cout.h"
 
 using namespace std;
 
@@ -41,6 +47,7 @@ static int on_receive(void* socket_ptr) {
         }
 
         game->on_receive(cmd, args);
+        game->handleMessage(message);
 
         if (cmd == "exit") {
             break;
@@ -85,12 +92,12 @@ void loop(SDL_Renderer* renderer) {
                 game->input(event);
 
                 switch (event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        is_running = false;
-                        break;
+                case SDLK_ESCAPE:
+                    is_running = false;
+                    break;
 
-                    default:
-                        break;
+                default:
+                    break;
                 }
             }
 
@@ -116,7 +123,7 @@ int run_game() {
     SDL_Window* window = SDL_CreateWindow(
         "Multiplayer Pong Client",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600,
+        700, 615,
         SDL_WINDOW_SHOWN
     );
 
@@ -132,6 +139,27 @@ int run_game() {
         return -1;
     }
 
+    game->Init(renderer);
+
+    //loop(renderer);
+
+   //how to use SDL_MixerInit()
+
+    // Initialize SDL_mixer
+
+
+    // Load audio files and other game initialization
+    //Mix_Music* bgMusic = Mix_LoadMUS("Sounds/bg.mp3");
+
+    //Mix_Chunk* spikeCol = Mix_LoadWAV("Sounds/end.mp3");
+    //Mix_Chunk* fruitCol = Mix_LoadWAV("Sounds/collect.mp3");
+    //Mix_Chunk* jumpSound = Mix_LoadWAV("Sounds/jump.wav");
+    //Mix_Chunk* flagSound = Mix_LoadWAV("Sounds/flag.mp3");
+    //Mix_Chunk* winSound = Mix_LoadWAV("Sounds/win.mp3");
+
+
+
+    // Start the game loop
     loop(renderer);
 
     return 0;
@@ -145,10 +173,29 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
+    if (TTF_Init() == -1) {
+        printf("SDL_Init: %s\n", SDL_GetError());
+        exit(1);
+    }
     // Initialize SDL_net
     if (SDLNet_Init() == -1) {
         printf("SDLNet_Init: %s\n", SDLNet_GetError());
         exit(2);
+    }
+
+    if (IMG_Init(IMG_INIT_PNG) == -1) {
+        printf("Image_Init: %s\n", SDLNet_GetError());
+        exit(3);
+    }
+
+    if (SDL_Init(SDL_INIT_AUDIO) == -1) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(4);
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(5);
     }
 
     IPaddress ip;
@@ -173,6 +220,9 @@ int main(int argc, char** argv) {
     run_game();
 
     delete game;
+
+    // Cleanup SDL_mixer
+    Mix_CloseAudio();
 
     // Close connection to the server
     SDLNet_TCP_Close(socket);
