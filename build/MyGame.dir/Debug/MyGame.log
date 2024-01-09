@@ -1,0 +1,5 @@
+﻿  MyGame.cpp
+C:\Users\poppy\3rd year\CI628-pe\src\MyGame.cpp(316,29): warning C4838: conversion from 'size_t' to 'int' requires a narrowing conversion
+C:\Users\poppy\3rd year\CI628-pe\src\MyGame.cpp(316,73): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\poppy\3rd year\CI628-pe\src\MyGame.cpp(316,42): warning C4838: conversion from 'size_t' to 'int' requires a narrowing conversion
+  MyGame.vcxproj -> C:\Users\poppy\3rd year\CI628-pe\build\Debug\MyGame.exe
